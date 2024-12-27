@@ -3,7 +3,7 @@ A tool to support dynamically switching between NDI PTZ cameras (or other source
 
 ## Introduction
 
-*NDI Camera Selector* is intended to be used in a live-stream, or other video production, setup based on PTZ cameras using the [NDI](https://ndi.video/) video over IP protocol.
+*NDI Camera Selector* is intended to be used in a live-stream, or other video production, station based on PTZ cameras using the [NDI](https://ndi.video/) video over IP protocol.
 
 It can be used as part of a setup including my [VISCA Game Controller application](https://github.com/DanTappan/VISCA-Game-Controller)
 
@@ -16,6 +16,28 @@ It supports the following features:
 - a graphics based interface with persistent configurable parameters
 
 ## Use
+
+When run, the application displays the following window
+
+![NDI Camera Selector](Screenshots/NDICameraSelector.png)
+
+This has the following sections:
+- **Cameras** - defines the list of configures camera sources. These will be advertised over NDI as "*Host* (CAM*n*)", through an NDI Router. That is, when a program accesses (e.g.) "**VideoStation (CAM1)**" it will be directed to the camera mapped to the **CAM1** slot. There is also a VISCA PTZ controller associated with each camera slot. This defaults to the same address as the NDI source. The VISCA port is currently hardwired to UDP 52381
+- **Sources** - lists the set of NDI sources which are visible on the local network via NDI discovery. Currently the application does not support the use of an NDI Discovery Server. Click on a source to select it.
+- **Viewer** - displays a snapshot from the current selected NDI source
+- to map a source to a camera slot
+  - select a source
+  - type the number of the slot (1-N) in the text box next to the **Set Camera** button
+  - either hit *return* or click on the **Set Camera** button
+- to set the address of the VISCA PTZ controller associated with a camera
+  - type the name or IP address of the controller into the text box next to the **Set PTZ** button
+  - either hit *return* or click on the **Set PTZ** button
+ 
+The window also includes a menu with the following items
+- Configure - pops up a configuration dialog which allows setting the number of supported camera slots (currently up to 7)
+- Exit - exits the program.
+
+**NOTE:** in order to prevent accidentally closing the Camera Selector app, which would break the operation of the live-streaming station, closing the app either through the menu, through the window close box, or through the task bar, requires an extra confirmation.
 
 ## Installation
 
