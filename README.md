@@ -19,7 +19,7 @@ It supports the following features:
 
 ## Installation
 
-A [Windows Installer](https://dantappan.net/downloads/) for the latest version is available. Alternatively, clone the repository through Github and go to town.
+A [Windows Installer](https://dantappan.net/projects/#NDI-Camera-Selector) for the latest version is available. Alternatively, clone the repository through Github and go to town.
 
 ## Credits
 
