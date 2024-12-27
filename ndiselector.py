@@ -229,7 +229,7 @@ column1_layout = [[Sg.Frame('Cameras', frame_layout, key="--CAMFRAME--",
 
 column2_layout = [[Sg.Frame('Viewer', viewer_layout)]]
 
-menu_layout = Sg.Menu([['Menu', ['Configure', 'Restore', 'Exit']]])
+menu_layout = Sg.Menu([['Menu', ['Configure', 'Exit']]])
 if Debug:
     debug_layout = [Sg.Multiline(autoscroll=True, size=(80, 5), reroute_stdout=True)]
     layout = [[menu_layout], [Sg.Column(column1_layout), Sg.Column(column2_layout)], [debug_layout]]
@@ -237,7 +237,7 @@ else:
     layout = [[menu_layout], [Sg.Column(column1_layout), Sg.Column(column2_layout)]]
 # Create the Window
 window = Sg.Window(ProgName, layout, finalize=True,   enable_close_attempted_event=True,
-                   icon=path.abspath(path.join(path.dirname(__file__), 'ndiselector.ico')))
+                   icon=path.abspath(path.join(path.dirname(__file__), 'NDI-Camera-Selector.ico')))
 
 window['PTZ_INPUT'].bind("<Return>", '_Set')
 window['CAM_INPUT'].bind('<Return>', '_Set')
@@ -279,7 +279,7 @@ while True:
         ndi_source = ndi.ndi_source_get()
         window.start_thread(lambda: ndi_image.getframe_task(window, ndi_source, ViewerSize),
                             ('-THREAD-', '-THEAD ENDED-'))
-    elif event == '-LOAD-STATE-TIMER-' or event == 'Restore':
+    elif event == '-LOAD-STATE-TIMER-':
         load_camera_state()
         for x in range(cameras.max()):
             ndi = cameras.cam_source_get(x)
