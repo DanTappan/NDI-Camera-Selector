@@ -3,16 +3,23 @@ A tool to support dynamically switching between NDI PTZ cameras (or other source
 
 ## Introduction
 
-*NDI Camera Selector* is intended to be used in a live-stream, or other video production, setup based on PTZ cameras using the [NDI](https://ndi.video/) video over IP protocol. It supports the following features:
+*NDI Camera Selector* is intended to be used in a live-stream, or other video production, setup based on PTZ cameras using the [NDI](https://ndi.video/) video over IP protocol.
 
-- the ability to dynamically select between *N* NDI video sources (e.g. PTZ cameras) on the LAN, and map them into *M* slots: CAM1-CAM*N*. This allows the operator to configure video switching application (such as [OBS] or [VMix]) with a set of video sources or scenes, and dynamically change which cameras appear in each scene
+It can be used as part of a setup including my [VISCA Game Controller application](https://github.com/DanTappan/VISCA-Game-Controller)
+
+It supports the following features:
+
+- the ability to dynamically select between *N* NDI video sources (e.g. PTZ cameras) on the LAN, and map them into *M* slots: CAM1-CAM*N*. This allows the operator to configure a video switching application (such as [OBS](https://obsproject.com/) or [VMix](https://www.vmix.com/)) with a set of video sources or scenes, and dynamically change which cameras appear in each scene
 - the ability to route IP VISCA packets, to control the cameras, to the appropriate IP destination for each slot. This allows the operator to statically configure the targets for an IP VISCA Joystick controller, and have the VISCA packets automatically mapped to the current set of selected cameras.
 - an additional benefit of this is that many VISCA joystick controllers require that targets be configured by IP address; accessing the camera through the VISCA router allows specifying cameras by name
-- to support the case of an NDI camera mounted on a separate Pan/Tilt controller, or when a camera that supports VISCA and HDMI is connected to the network through an HDMI->NDI converter, the VISCA target for each camera can be specified separately
+- to support the case of an NDI camera mounted on a separate Pan/Tilt controller, or when a camera that supports VISCA and HDMI is connected to the network through an HDMI->NDI adaptor, the VISCA target for each camera can be specified separately
 - a graphics based interface with persistent configurable parameters
 
 ## Use
 
+## Installation
+
+A [Windows Installer](https://dantappan.net/downloads/) for the latest version is available. Alternatively, clone the repository through Github and go to town.
 
 ## Credits
 
