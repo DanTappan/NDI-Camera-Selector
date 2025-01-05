@@ -9,10 +9,10 @@ VSVersionInfo(
                 StringTable(
                     u'040904B0',
                     [
-                        StringStruct(u'FileDescription', u'ndielector'),
+                        StringStruct(u'FileDescription', u'ndiselector'),
                         StringStruct(u'InternalName', u'ndiselector'),
                         StringStruct(u'LegalCopyright', u'Copyright (c) Dan Tappan'),
-                        StringStruct(u'OriginalFilename', u'ndiselector.exe'),
+                        StringStruct(u'OriginalFilename', u'NDI Camera Selector.exe'),
                         StringStruct(u'ProductName', u'ndiselector'),
                         StringStruct(u'ProductVersion', u'0.5')])
                     ]
