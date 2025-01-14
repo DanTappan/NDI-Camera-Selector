@@ -34,10 +34,33 @@ This has the following sections:
   - either hit *return* or click on the **Set PTZ** button
  
 The window also includes a menu with the following items
-- Configure - pops up a configuration dialog which allows setting the number of supported camera slots (currently up to 7)
-- Exit - exits the program.
+- **Refresh** - Clears and refreshes the list of NDI Sources. This is useful in a test environment when sources are being added and removed.
+- **Configure** - pops up a configuration dialog which allows setting the number of supported camera slots (currently up to 7)
+- **Exit** - exits the program.
 
 **NOTE:** in order to prevent accidentally closing the Camera Selector app, which would break the operation of the live-streaming station, closing the app either through the menu, through the window close box, or through the task bar, requires an extra confirmation.
+
+### Configuration
+
+The **Configure** menu item (see above) presents the following dialog
+
+![Configure Dialog](Screenshots/Configure.png)
+
+- **Camera Count** sets the number of camera forwarders (CAM*1* - CAM*N*) which can be set.
+- **Enable Bitfocus Companion Interface** enables switching the **Preview** window on VMix/OBS/ATEM when the program detects that the selected camera has changed
+- **Bitfocus Companion Address** selects the address of the machine running BitFocus Companion, if the Companion Interface is enabled
+- **Bitfocus Companion Page** selects the button page that will be used for selecting the **Preview** window. See below
+- **Save&Exit** saves the current configuration and exits the program, on restart it will use the new parameters
+- **Cancel** cancels the configuration without making any changes.
+
+### BitFocus Companion Interface
+
+As noted above, the program has an optional feature to detect when the camera selected by a VISCA controller has changed, and automatically switch the **Preview** window of the streaming software/hardware. 
+
+This is not enabled by default for several reasons:
+- It assumes that the setup includes [BitFocus Companion](https://bitfocus.io/companion) with a preconfigured button page, such that selecting Button Column *N* from Row 0 will set the preview window to camera *N*. There is a [sample Companion configuration](Sample.companionconfig) included in the repository which supports BlackMagic ATEM (page 97), VMix (page 98) and OBS (page 99)
+- It assumes that the setup includes a single VISCA camera controller, and that the controller will only communicate with one camera at a time. This is probably a common configuraton, but it's not universal.
+- If you are using my [VISCA-Game-Controller](https://github.com/DanTappan/VISCA-Game-Controller) application, the feature is redundant
 
 ## Installation
 
