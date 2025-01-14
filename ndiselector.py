@@ -9,15 +9,23 @@ import viscarelay
 import ndi_image
 import socket
 import config
+import threading
+import companion
 
 ProgName = 'NDI Camera Selector'
 
 Debug = False
 
 config = config.Config()
+bitfocus_info = config.bitfocus_info()
+if bitfocus_info is not None:
+    bitfocus = companion.Companion(target=bitfocus_info[0],
+                                   page=bitfocus_info[1],
+                                   row=0)
+else:
+    bitfocus = None
 
 camera_count = config.camera_count()
-RelayPortBase = config.relay_port_base()
 
 # Constants
 ViscaPort = 52381
@@ -60,7 +68,6 @@ class NDISource(dict):
         return (self.dynamic() and
                 (time.monotonic() - self["lastseen"]) > 60.0)
 
-
 ndi_None = NDISource("None", "static")
 
 
@@ -72,6 +79,10 @@ class NDISourceList:
         desc.show_local_sources = False
         self.ndi_find = Ndi.find_create_v2(desc)
         self.cache = {"None": ndi_None}
+
+    def delete(self):
+        """" Cleanup before re-initing the list """
+        Ndi.find_destroy(self.ndi_find)
 
     def update(self) -> bool:
         """ Update the list of dynamic sources, returns True if changed """
@@ -131,7 +142,7 @@ class NDISourceList:
 
 class CameraList:
     """ List of active cameras. """
-    def __init__(self, count=7, routerlist: ndirouter.NDIRouterList = None,
+    def __init__(self, count, routerlist: ndirouter.NDIRouterList = None,
                  viscalist: viscarelay.ViscaRelayList = None):
         self.camera_list = []
         self.max_camera = count
@@ -163,8 +174,35 @@ class CameraList:
 # List of cameras and NDI sources
 cameras: CameraList = CameraList(count=camera_count,
                                  routerlist=ndirouter.NDIRouterList(camera_count),
-                                 viscalist=viscarelay.ViscaRelayList(camera_count, RelayPortBase, ViscaPort))
+                                 viscalist=viscarelay.ViscaRelayList(camera_count,
+                                                                     bitfocus,
+                                                                     config.relay_port_base(),
+                                                                     ViscaPort))
 ndi_sources: NDISourceList = NDISourceList()
+ndi_sources_lock = threading.Lock()
+
+def ndi_sources_clear(win):
+    """ Initalize/Clear the list of NDI sources.
+        This is called at startup and as a result of the 'Refresh' menu item """
+    global ndi_sources, ndi_sources_lock, ndi_None, cameras
+
+    win['--NDILIST--'].update([])
+    for num in range(cameras.max()):
+        cameras.cam_source_set(num, ndi_None)
+        win['--CAMSRC'+str(num)].update(ndi_None.name_get())
+        win['--CAMPTZ'+str(num)].update(ndi_None.ptz_get())
+
+    with ndi_sources_lock:
+        if ndi_sources is not None:
+            ndi_sources.delete()
+
+        ndi_sources = NDISourceList()
+
+    # Set a one-shot timer to load the saved camera configuration after giving enough time
+    # for the active NDI sources to show up. In practice, they seem to show up within
+    # about 1 second
+    (win.timer_start(frequency_ms=2500, key='-LOAD-STATE-TIMER-', repeating=False))
+
 
 def save_camera_state():
     """ Save the current list of selected cameras and associated PTZ addresses"""
@@ -185,20 +223,24 @@ def load_camera_state():
 
     if camera_list is not None:
         for idx in range(len(camera_list)):
-            ndi_src = ndi_sources.find(camera_list[idx])
-            if ndi_src is not None and idx < cameras.max():
-                cameras.cam_source_set(idx, ndi_src)
+            src = ndi_sources.find(camera_list[idx])
+            if src is not None and idx < cameras.max():
+                cameras.cam_source_set(idx, src)
 
 
 # background thread to update NDI sources list
 #
-def update_ndi_thread(window: Sg.Window, ndi_sources):
+def update_ndi_thread(win: Sg.Window):
     """ Periodic background thread to watch for new NDI sources on the network"""
+    global ndi_sources, ndi_sources_lock
+
     time.sleep(1)
     while True:
-        if ndi_sources.update():
-            window.write_event_value(('-THREAD-', 'NDICHANGE'), 'NDICHANGE')
-        time.sleep(10)
+        with ndi_sources_lock:
+            if ndi_sources.update():
+                win.write_event_value(('-THREAD-', 'NDICHANGE'), 'NDICHANGE')
+
+        time.sleep(2)
 
 
 #
@@ -229,7 +271,7 @@ column1_layout = [[Sg.Frame('Cameras', frame_layout, key="--CAMFRAME--",
 
 column2_layout = [[Sg.Frame('Viewer', viewer_layout)]]
 
-menu_layout = Sg.Menu([['Menu', ['Configure', 'Exit']]])
+menu_layout = Sg.Menu([['Menu', ['Refresh', 'Configure', 'Exit']]])
 if Debug:
     debug_layout = [Sg.Multiline(autoscroll=True, size=(80, 5), reroute_stdout=True)]
     layout = [[menu_layout], [Sg.Column(column1_layout), Sg.Column(column2_layout)], [debug_layout]]
@@ -242,14 +284,12 @@ window = Sg.Window(ProgName, layout, finalize=True,   enable_close_attempted_eve
 window['PTZ_INPUT'].bind("<Return>", '_Set')
 window['CAM_INPUT'].bind('<Return>', '_Set')
 
-update_thread = window.start_thread(lambda: update_ndi_thread(window, ndi_sources), ('-THREAD-', '-THEAD ENDED-'))
+update_thread = window.start_thread(lambda: update_ndi_thread(window), ('-THREAD-', '-THEAD ENDED-'))
 
 # Event Loop to process "events" and get the "values" of the inputs
 
-# Set a one-shot timer to load the saved camera configuration after giving enough time
-# for the active NDI sources to show up. In practice, they seem to show up within
-# about 1 second
-window.timer_start(frequency_ms=2500, key='-LOAD-STATE-TIMER-', repeating=False)
+# clear/refresh the sources list
+ndi_sources_clear(window)
 
 while True:
     event, values = window.read()
@@ -263,6 +303,9 @@ while True:
     elif event == 'Exit':
         window.close()
         break
+
+    elif event == 'Refresh':
+        ndi_sources_clear(window)
 
     elif event == 'Configure':
         config.configure()
@@ -279,6 +322,7 @@ while True:
         ndi_source = ndi.ndi_source_get()
         window.start_thread(lambda: ndi_image.getframe_task(window, ndi_source, ViewerSize),
                             ('-THREAD-', '-THEAD ENDED-'))
+
     elif event == '-LOAD-STATE-TIMER-':
         load_camera_state()
         for x in range(cameras.max()):

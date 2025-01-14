@@ -8,6 +8,7 @@ import time
 
 # Workaround for bug in PTZ Controller INQUIRY commands
 Fix_INQUIRY = True
+last_relay = -1
 
 class ViscaRelayInstance:
     def ptz_set(self, ptz: str):
@@ -25,6 +26,8 @@ class ViscaRelayInstance:
               seen from the controller
             - otherwise, forward to the current sockaddr for the camera
         """
+        global last_relay
+
         s = self.socket
         self.recv_sockaddr = None
 
@@ -42,6 +45,16 @@ class ViscaRelayInstance:
                     self.recv_sockaddr = address
                     # forward packet to the camera
                     dst_sockaddr = self.ptz_sockaddr
+
+                    # If the Bitfocus Companion interface is configured, and the controller
+                    # has switched to a new relay destination, try to trigger a switch
+                    # to the appropriate camera in the preview window
+                    # This assumes only one controller is active at once and that
+                    # the controller only talks to one camera at a time
+                    #
+                    if self.bitfocus is not None and self.relay_num != last_relay:
+                        self.bitfocus.pushbutton(column=self.relay_num+1)
+                        last_relay = self.relay_num
 
                     # Patch around bug in AVKANS controller, it encapsulates INQUIRY commands
                     # in Visca CMD packets
@@ -64,7 +77,7 @@ class ViscaRelayInstance:
 
             # Loop forever
 
-    def __init__(self, rcv_port: int, ptz_port: int):
+    def __init__(self, rcv_port: int, ptz_port: int, bitfocus, relay_num):
         """ Init:
             - create and bind socket for input.
             - create send sockaddr for sending to camera
@@ -73,6 +86,8 @@ class ViscaRelayInstance:
             - response packets from camera will be from port 52381
             - forward packets back to controller
         """
+        self.relay_num = relay_num
+        self.bitfocus = bitfocus
         self.rcv_port = rcv_port
         self.ptz_port = ptz_port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -86,10 +101,10 @@ class ViscaRelayInstance:
 
 
 class ViscaRelayList:
-    def __init__(self, count: int, baseport: int, viscaport: int):
+    def __init__(self, count: int, bitfocus, baseport: int, viscaport: int):
         self.relaylist = []
         for x in range(count):
-            self.relaylist.insert(x, ViscaRelayInstance(baseport, viscaport))
+            self.relaylist.insert(x, ViscaRelayInstance(baseport, viscaport, bitfocus, x))
             baseport = baseport + 1
 
     def ptz_set(self, index: int, ptz: str):

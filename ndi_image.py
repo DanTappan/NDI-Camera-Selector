@@ -1,7 +1,7 @@
 import NDIlib as Ndi
 from PIL import Image
 import io
-import PySimpleGUI as sg
+import PySimpleGUI as Sg
 import time
 
 
@@ -51,7 +51,7 @@ def getframe_blank(imgsize: tuple[int, int]) -> Image:
     return img
 
 
-def getframe_task(window: sg.Window, ndi_src: Ndi.Source, imgsize: tuple[int, int]):
+def getframe_task(window: Sg.Window, ndi_src: Ndi.Source, imgsize: tuple[int, int]):
     """ External function - call as a task lambda from the PySimpleGUI window manager """
     try:
         img = getframe_ndi(ndi_src)
