@@ -66,13 +66,22 @@ This is not enabled by default for several reasons:
 
 A [Windows Installer](https://dantappan.net/projects/#NDI-Camera-Selector) for the latest version is available. Alternatively, clone the repository through Github and go to town.
 
+## Python Packages
+- ndi-python
+- numpy
+- pillow
+- psgtray-foss
+- pyinstaller
+- PySimpleGUI-4-foss
+- pystray
+
 ## Credits
 
 The program uses the following libraries
 
 - the [NewTek NDI SDK](https://ndi.video/for-developers/ndi-sdk/download/)
-- the [NDI-Python](https://pypi.org/project/ndi-python/) library for the NDI SDK. **NOTE** this library currently only support up to Python 3.10, therefore this program must be built using Python 3.10 or earlier.
-- the [PySimpleGUI](https://pysimplegui.com/) GUI library. **NOTE** you may be required to register for a [free Hobbyist licence for PySimplGui](https://pysimplegui.com/pricing) in order to use this program
+- the [NDI-Python](https://pypi.org/project/ndi-python/) library for the NDI SDK. **NOTE** this library currently only supports up to Python 3.10, therefore this program must be built using Python 3.10 or earlier.
+- the FOSS version 4 of [PySimpleGUI](https://pysimplegui.com/) GUI library. 
 - the program icon is based on [Ptz camera icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/ptz-camera)
 - the program was developed using the [PyCharm Community Edition IDE](https://www.jetbrains.com/pycharm/)
 - the Windows installer was created using [InstallForge](https://installforge.net/)
