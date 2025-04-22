@@ -14,7 +14,7 @@ VSVersionInfo(
                         StringStruct(u'LegalCopyright', u'Copyright (c) Dan Tappan'),
                         StringStruct(u'OriginalFilename', u'NDI Camera Selector.exe'),
                         StringStruct(u'ProductName', u'ndiselector'),
-                        StringStruct(u'ProductVersion', u'0.71')])
+                        StringStruct(u'ProductVersion', u'0.8')])
                     ]
         ),
         VarFileInfo([VarStruct(u'Translation', [1033, 1200])])

@@ -4,11 +4,32 @@ import os
 import sys
 import gc
 
+ProgName = 'NDI Camera Selector'
+ProgVers = "0.8"
+
+credits_text = """
+Dan Tappan (https://dantappan.net) - (c) 2024, 2025
+
+Written/debugged using PyCharm Community Edition
+    https://www.jetbrains.com/pycharm/
+
+NDI Support: 
+    ndi-python (https://github.com/buresu/ndi-python)
+
+Graphical interface: 
+    PySimpleGUI-foss 
+    https://github.com/andor-pierdelacabeza/PySimpleGUI-4-foss
+    psgtray-foss
+
+Icon based on: 
+    https://www.flaticon.com/free-icons/ptz-camera
+    created by Freepik
+ """
+
 def restart_program():
     """Restart the current program """
     python = sys.executable
     os.execv(python, ['python'] + sys.argv)
-
 
 class Config:
     def __init__(self):
@@ -38,11 +59,16 @@ class Config:
         statetuple = self.user_settings.get("-CAMSTATE-", (None, None))
         return statetuple
 
+    @property
+    def credits_text(self):
+        return f"{ProgName} {ProgVers}\n" + credits_text
+
     def configure(self):
         # Run dialog to set configuration parameters
         # this will restart the program if parameters change
 
         layout = [
+                  [Sg.Text(f"{ProgName} version {ProgVers}")],
                   [Sg.Text('Camera Count '), Sg.Input(default_text=str(self._camera_count),
                                                       key='CAMERACOUNT', size=4),],
                   [Sg.Checkbox('Enable Bitfocus Companion Interface',
