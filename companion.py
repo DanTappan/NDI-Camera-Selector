@@ -13,7 +13,10 @@ class Companion:
         self.row = row
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         address = (target, port)
-        self.socket.connect(address)
+        try:
+            self.socket.connect(address)
+        except socket.gaierror:
+            print("Companion Connect: bad address")
 
     def pushbutton(self, page=None, row=None, column:int=0):
         if page is None:

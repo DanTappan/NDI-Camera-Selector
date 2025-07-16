@@ -330,10 +330,14 @@ if __name__ == "__main__":
 
         elif event == '--NDILIST--':
             # User selected a camera, try to grab an image
-            ndi = ndi_sources.find(values['--NDILIST--'][0])
-            ndi_source = ndi.ndi_source_get()
-            window.start_thread(lambda: ndi_image.getframe_task(window, ndi_source, ViewerSize),
-                                ('-THREAD-', '-THEAD ENDED-'))
+            try:
+                ndi = ndi_sources.find(values['--NDILIST--'][0])
+            except IndexError:
+                ndi = None
+            if ndi is not None:
+                ndi_source = ndi.ndi_source_get()
+                window.start_thread(lambda: ndi_image.getframe_task(window, ndi_source, ViewerSize),
+                                    ('-THREAD-', '-THEAD ENDED-'))
 
         elif event == '-LOAD-STATE-TIMER-':
             load_camera_state()

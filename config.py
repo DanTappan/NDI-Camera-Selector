@@ -5,7 +5,7 @@ import sys
 import gc
 
 ProgName = 'NDI Camera Selector'
-ProgVers = "0.8"
+ProgVers = "0.85"
 
 credits_text = """
 Dan Tappan (https://dantappan.net) - (c) 2024, 2025
