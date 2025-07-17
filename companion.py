@@ -6,6 +6,7 @@
 # - The UDP API is configured on the default port (16759)
 #
 import socket
+import PySimpleGUI as Sg
 
 class Companion:
     def __init__(self, target:str="127.0.0.1", port:int=16759, page='0', row:int=0):
@@ -16,7 +17,7 @@ class Companion:
         try:
             self.socket.connect(address)
         except socket.gaierror:
-            print("Companion Connect: bad address")
+            Sg.popup_error(f'BitFocus Companion connect: Bad address "{target}"')
 
     def pushbutton(self, page=None, row=None, column:int=0):
         if page is None:

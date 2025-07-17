@@ -308,17 +308,13 @@ if __name__ == "__main__":
 
         if event == Sg.WIN_CLOSED:
             break
-        if event == Sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
+        if event == Sg.WINDOW_CLOSE_ATTEMPTED_EVENT or event == 'Exit':
             if Sg.popup_ok_cancel("Really Close?", keep_on_top=True) == 'OK':
                 window.close()
                 break
         elif event == 'Credits':
                 Sg.popup(config.credits_text, title="Credits", keep_on_top=True,
                          line_width=80)
-
-        elif event == 'Exit':
-            window.close()
-            break
 
         elif event == 'Refresh':
             ndi_sources_clear(window)
