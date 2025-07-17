@@ -264,11 +264,15 @@ if __name__ == "__main__":
 
     sources_layout = [[Sg.Listbox(ndi_sources.srclist(), size=(54, 7), key='--NDILIST--', enable_events=True,
                                   tooltip='Click on NDI source to select')],
-                      [Sg.Button('Set Camera', tooltip='Set Camera <n> to selected NDI Source'),
-                        Sg.InputText(size=3, key='CAM_INPUT', do_not_clear=False, tooltip='Enter camera number to set'),
-                        Sg.Button('Set PTZ', tooltip='Set the PTZ name/address for selected NDI Source to input value'),
+                      [
+                        Sg.InputText(size=3, key='CAM_INPUT',
+                                     do_not_clear=False, tooltip='Enter camera number to set'),
+                        Sg.Button('Set Camera',
+                                  tooltip='Set Camera <n> to selected NDI Source'),
                         Sg.InputText(size=10, key='PTZ_INPUT', do_not_clear=False,
-                                     tooltip='Enter hostname of PTZ for selected NDI source')
+                                     tooltip='Enter hostname/address of PTZ for selected NDI source'),
+                        Sg.Button('Set PTZ',
+                                    tooltip='Set the PTZ hostname/address for selected NDI Source to input value'),
                         ]
                       ]
     viewer_layout = [[Sg.Image(size=ViewerSize, key="--VIEWER--")]]
