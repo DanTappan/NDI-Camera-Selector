@@ -22,6 +22,7 @@ class Companion:
     def pushbutton(self, page=None, row=None, column:int=0):
         if page is None:
             page = self.page
+
         if row is None:
             row = self.row
 

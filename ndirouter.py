@@ -18,10 +18,10 @@ class NDIRoutingInstance(dict):
 
 class NDIRouterList:
     """ Manipulate the list of NDI Router instances"""
-    def __init__(self, count):
+    def __init__(self, count, cam_name):
         self.router_list = []
         for x in range(count):
-            self.router_list.insert(x, NDIRoutingInstance("CAM" + str(x+1)))
+            self.router_list.insert(x, NDIRoutingInstance(cam_name + str(x+1)))
             self.router_list[x].set_routing(None)
 
     def set_routing(self, index, ndi_source: Ndi.Source | None):

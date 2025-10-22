@@ -5,7 +5,7 @@ import sys
 import gc
 
 ProgName = 'NDI Camera Selector'
-ProgVers = "0.85"
+ProgVers = "1.0beta1"
 
 credits_text = """
 Dan Tappan (https://dantappan.net) - (c) 2024, 2025
@@ -38,7 +38,13 @@ class Config:
         self._relay_port_base = self.user_settings.get("-RELAYPORT-", 10001)
         self._bitfocus_enable = self.user_settings.get('-BITFOCUSENABLE-', False)
         self._bitfocus_target = self.user_settings.get('-BITFOCUSTARGET-', '127.0.0.1')
-        self._bitfocus_page = self.user_settings.get('-BITFOCUSPAGE-', '99')
+        self._bitfocus_page = self.user_settings.get('-BITFOCUSPAGE-', '0')
+        # pattern for the sources we advertise
+        # TODO: make this configurable
+        self._cam_name = "@CAM"
+
+    def cam_name(self):
+        return self._cam_name
 
     def camera_count(self):
         return self._camera_count

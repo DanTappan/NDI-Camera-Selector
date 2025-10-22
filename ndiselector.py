@@ -12,7 +12,7 @@ from config import ProgName
 import config
 import threading
 import companion
-
+from typing import List, Dict
 Debug = False
 
 config = config.Config()
@@ -75,7 +75,7 @@ class NDISourceList:
     """
     def __init__(self):
         desc = Ndi.FindCreate()
-        desc.show_local_sources = False
+        desc.show_local_sources = True
         self.ndi_find = Ndi.find_create_v2(desc)
         self.cache = {"None": ndi_None}
 
@@ -92,7 +92,11 @@ class NDISourceList:
 
         sources = Ndi.find_get_current_sources(self.ndi_find)
         for i, s in enumerate(sources):
+            # VMix
             if re.search("Remote Connection", s.ndi_name):
+                continue
+            # Filter out sources advertised by this app
+            if re.search(config.cam_name(), s.ndi_name):
                 continue
 
             if s.ndi_name in self.cache:
@@ -143,19 +147,20 @@ class CameraList:
     """ List of active cameras. """
     def __init__(self, count, routerlist: ndirouter.NDIRouterList = None,
                  viscalist: viscarelay.ViscaRelayList = None):
-        self.camera_list = []
+        self.camera_list : List[Dict] = []
         self.max_camera = count
         self.routerlist = routerlist
         self.viscalist = viscalist
 
         for idx in range(count):
-            tmpdict = {"name": 'CAM' + str(idx + 1) + ':', "ndi_source": ndi_None}
+            tmpdict = {"name": config.cam_name() + str(idx + 1) + ':',
+                       "ndi_source": ndi_None}
             self.camera_list.insert(idx, tmpdict)
 
     def max(self):
         return self.max_camera
 
-    def cam_name(self, cam_num):
+    def cam_name(self, cam_num) -> str:
         return self.camera_list[cam_num]["name"]
 
     def cam_source_get(self, cam_num: int) -> NDISource:
@@ -172,7 +177,8 @@ class CameraList:
 
 # List of cameras and NDI sources
 cameras: CameraList = CameraList(count=camera_count,
-                                 routerlist=ndirouter.NDIRouterList(camera_count),
+                                 routerlist=ndirouter.NDIRouterList(camera_count,
+                                                                    config.cam_name()),
                                  viscalist=viscarelay.ViscaRelayList(camera_count,
                                                                      bitfocus,
                                                                      config.relay_port_base(),
@@ -258,9 +264,9 @@ if __name__ == "__main__":
     for x in range(cameras.max()):
         ndi_src = cameras.cam_source_get(x)
         frame_layout.insert(x,
-                            [Sg.Text(cameras.cam_name(x)),
-                             Sg.Text(ndi_src.name_get(), font=('Courier', 12, 'bold'), size=20, key='--CAMSRC' + str(x)),
-                             Sg.Text(ndi_src.ptz_get(), font=('Courier', 12, 'italic'), size=20, key='--CAMPTZ' + str(x))])
+                            [Sg.Text(cameras.cam_name(x), font=('Courier', 11, 'bold'), size=6),
+                             Sg.Text(ndi_src.name_get(), font=('Courier', 11, 'bold'), size=30, key='--CAMSRC' + str(x)),
+                             Sg.Text(ndi_src.ptz_get(), font=('Courier', 11, 'italic'), size=20, key='--CAMPTZ' + str(x))])
 
     sources_layout = [[Sg.Listbox(ndi_sources.srclist(), size=(54, 7), key='--NDILIST--', enable_events=True,
                                   tooltip='Click on NDI source to select')],
@@ -296,7 +302,8 @@ if __name__ == "__main__":
     window['PTZ_INPUT'].bind("<Return>", '_Set')
     window['CAM_INPUT'].bind('<Return>', '_Set')
 
-    update_thread = window.start_thread(lambda: update_ndi_thread(window), ('-THREAD-', '-THEAD ENDED-'))
+    update_thread = window.start_thread(lambda: update_ndi_thread(window),
+                                        ('-THREAD-', '-THREAD ENDED-'))
 
     # Event Loop to process "events" and get the "values" of the inputs
 
@@ -337,7 +344,7 @@ if __name__ == "__main__":
             if ndi is not None:
                 ndi_source = ndi.ndi_source_get()
                 window.start_thread(lambda: ndi_image.getframe_task(window, ndi_source, ViewerSize),
-                                    ('-THREAD-', '-THEAD ENDED-'))
+                                    ('-THREAD-', '-THREAD ENDED-'))
 
         elif event == '-LOAD-STATE-TIMER-':
             load_camera_state()
