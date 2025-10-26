@@ -265,8 +265,8 @@ if __name__ == "__main__":
         ndi_src = cameras.cam_source_get(x)
         frame_layout.insert(x,
                             [Sg.Text(cameras.cam_name(x), font=('Courier', 11, 'bold'), size=6),
-                             Sg.Text(ndi_src.name_get(), font=('Courier', 11, 'bold'), size=30, key='--CAMSRC' + str(x)),
-                             Sg.Text(ndi_src.ptz_get(), font=('Courier', 11, 'italic'), size=20, key='--CAMPTZ' + str(x))])
+                             Sg.Text(ndi_src.name_get(), font=('Courier', 11, 'bold'), size=25, key='--CAMSRC' + str(x)),
+                             Sg.Text(ndi_src.ptz_get(), font=('Courier', 11, 'italic'), size=16, key='--CAMPTZ' + str(x))])
 
     sources_layout = [[Sg.Listbox(ndi_sources.srclist(), size=(54, 7), key='--NDILIST--', enable_events=True,
                                   tooltip='Click on NDI source to select')],
